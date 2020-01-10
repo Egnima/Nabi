@@ -39,7 +39,9 @@ namespace Nabi.Templates
 		/// <summary>
 		/// Gets a template for simple testing tool windows.
 		/// </summary>
-		public DataTemplate Tooln_ViewTemplate { get; set; }
+		public DataTemplate Output_ViewTemplate { get; set; }
+
+		public DataTemplate Log_ViewTemplate { get; set; }
 
 		/// <summary>
 		/// Determines the matching view for a specific given type of viewmodel.
@@ -60,8 +62,11 @@ namespace Nabi.Templates
 			if (item is ColorPickerViewModel)
 				return ColorPickerViewTemplate;
 
-			if (item is Tool1_ViewModel || item is Tool2_ViewModel || item is Tool3_ViewModel)
-				return Tooln_ViewTemplate;
+			if (item is Output_ViewModel)
+				return Output_ViewTemplate;
+
+			if (item is Log_ViewModel)
+				return Log_ViewTemplate;
 
 			return base.SelectTemplate(item, container);
 		}

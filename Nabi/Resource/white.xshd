@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<SyntaxDefinition name="white" extensions=".txt" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+	<Color name="AllCharacter" foreground="White" />
+    <RuleSet>
+        <Rule color="AllCharacter">
+		    .
+	    </Rule>
+    </RuleSet>
+</SyntaxDefinition>

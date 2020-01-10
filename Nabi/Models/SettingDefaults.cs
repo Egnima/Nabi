@@ -20,7 +20,7 @@ namespace Nabi.Models
 
 			options.AddOption(groupName, "ReloadOpenFilesFromLastSession", typeof(bool), false, true);
 			options.AddOption(groupName, "SourceFilePath", typeof(string), false, @"C:\");
-			options.AddOption(groupName, "LanguageSelected", typeof(string), false, "en-US");
+			options.AddOption(groupName, "LanguageSelected", typeof(string), false, "ko-KR");
 		}
 
 		/// <summary>

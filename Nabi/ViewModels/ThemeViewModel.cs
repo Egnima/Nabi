@@ -118,7 +118,6 @@ namespace Nabi.ViewModels
 
 					Color AccentColor = ThemeViewModel.GetCurrentAccentColor(settings);
 					GetService<IAppearanceManager>().SetTheme(settings.Themes, themeName, AccentColor);
-
 					ThemeDefinitionViewModel o;
 					_ListOfThemes.TryGetValue(themeName, out o);
 					SelectedTheme = o;
@@ -180,6 +179,8 @@ namespace Nabi.ViewModels
 				_SelectedTheme.IsSelected = true;
 			}
 		}
+
+		
 		#endregion methods
 	}
 }

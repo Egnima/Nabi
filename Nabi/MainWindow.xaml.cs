@@ -1,4 +1,5 @@
-﻿using Nabi.Models;
+﻿using MLib.Interfaces;
+using Nabi.Models;
 using Nabi.ViewModels;
 using Nabi.ViewModels.Base;
 using Settings.UserProfile;
@@ -7,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using Xceed.Wpf.AvalonDock.Layout.Serialization;
 
 namespace Nabi

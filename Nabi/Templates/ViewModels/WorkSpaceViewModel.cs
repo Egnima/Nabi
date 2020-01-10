@@ -10,6 +10,10 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using ICSharpCode.AvalonEdit.Document;
+using MLib.Interfaces;
+using System.Diagnostics;
+using Nabi.Templates.ViewModels.Views;
 
 namespace Nabi.Templates.ViewModels
 {
@@ -87,6 +91,15 @@ namespace Nabi.Templates.ViewModels
 	}
 	#endregion Helper Test Classes
 
+	public enum ToggleEditorOption
+	{
+		WordWrap = 0,
+		ShowLineNumber = 1,
+		ShowEndOfLine = 2,
+		ShowSpaces = 3,
+		ShowTabs = 4
+	}
+
 	/// <summary>
 	/// The WorkSpaceViewModel implements AvalonDock demo specific properties, events and methods.
 	/// </summary>
@@ -99,12 +112,13 @@ namespace Nabi.Templates.ViewModels
 
 		private ICommand _openCommand = null;
 		private ICommand _newCommand = null;
+		private ICommand _toggleEditorOptionCommand = null;
+
 
 		private FileStatsViewModel _fileStats = null;
 		private ColorPickerViewModel _ColorPicker = null;
-		private Tool1_ViewModel _Tool1;
-		private Tool2_ViewModel _Tool2;
-		private Tool3_ViewModel _Tool3;
+		private Output_ViewModel _output;
+		private Log_ViewModel _log;
 
 		private FileViewModel _activeDocument = null;
 		#endregion private fields
@@ -168,7 +182,7 @@ namespace Nabi.Templates.ViewModels
 			get
 			{
 				if (_tools == null)
-					_tools = new ToolViewModel[] { FileStats, ColorPicker, _Tool1, _Tool2, _Tool3 };
+					_tools = new ToolViewModel[] { FileStats, ColorPicker, Output, Log };
 
 				return _tools;
 			}
@@ -205,44 +219,31 @@ namespace Nabi.Templates.ViewModels
 		/// <summary>
 		/// Gets an instance of the tool1 tool window viewmodel.
 		/// </summary>
-		public Tool1_ViewModel Tool1
+		public Output_ViewModel Output
 		{
 			get
 			{
-				if (_Tool1 == null)
-					_Tool1 = new Tool1_ViewModel(this as IWorkSpaceViewModel);
+				if (_output == null)
+					_output = new Output_ViewModel(this as IWorkSpaceViewModel);
 
-				return _Tool1;
+				return _output;
 			}
 		}
 
 		/// <summary>
 		/// Gets an instance of the tool2 tool window viewmodel.
 		/// </summary>
-		public Tool2_ViewModel Tool2
+		public Log_ViewModel Log
 		{
 			get
 			{
-				if (_Tool2 == null)
-					_Tool2 = new Tool2_ViewModel(this as IWorkSpaceViewModel);
+				if (_log == null)
+					_log = new Log_ViewModel(this as IWorkSpaceViewModel);
 
-				return _Tool2;
+				return _log;
 			}
 		}
 
-		/// <summary>
-		/// Gets an instance of the tool3 tool window viewmodel.
-		/// </summary>
-		public Tool3_ViewModel Tool3
-		{
-			get
-			{
-				if (_Tool3 == null)
-					_Tool3 = new Tool3_ViewModel(this as IWorkSpaceViewModel);
-
-				return _Tool3;
-			}
-		}
 
 		/// <summary>
 		/// Gets a open document command to open files from the file system.
@@ -269,6 +270,7 @@ namespace Nabi.Templates.ViewModels
 			{
 				if (_newCommand == null)
 				{
+					
 					_newCommand = new RelayCommand<object>((p) => OnNew(p), (p) => CanNew(p));
 				}
 
@@ -287,7 +289,7 @@ namespace Nabi.Templates.ViewModels
 		{
 			if (fileToClose.IsDirty)
 			{
-				var res = MessageBox.Show(string.Format("Save changes for file '{0}'?", fileToClose.FileName), "AvalonDock Test App", MessageBoxButton.YesNoCancel);
+				var res = MessageBox.Show(string.Format("'{0}' 파일의 변경 내용을 저장하시겠습니까?", fileToClose.FileName), "Nabi", MessageBoxButton.YesNoCancel);
 				if (res == MessageBoxResult.Cancel)
 					return;
 
@@ -300,6 +302,24 @@ namespace Nabi.Templates.ViewModels
 			_files.Remove(fileToClose);
 		}
 
+		public void Run(FileViewModel fvm)
+		{
+			//Output.a();
+			//Log.b();
+			if (fvm.IsDirty)
+			{
+				var res = MessageBox.Show(string.Format("'{0}' 파일의 변경 내용을 저장하시겠습니까?", fvm.FileName), "Nabi", MessageBoxButton.YesNoCancel);
+				if (res == MessageBoxResult.Cancel)
+					return;
+
+				if (res == MessageBoxResult.Yes)
+				{
+					Save(fvm);
+				}
+			}
+			PythonManager.Compiler.run(fvm);
+		}
+
 		/// <summary>
 		/// Saves a document and resets the dirty flag.
 		/// </summary>
@@ -310,11 +330,15 @@ namespace Nabi.Templates.ViewModels
 			if (fileToSave.FilePath == null || saveAsFlag)
 			{
 				var dlg = new SaveFileDialog();
+				dlg.Title = "파일 저장";
+				dlg.Filter = "파이썬 파일 (*.py)|*.py";
 				if (dlg.ShowDialog().GetValueOrDefault())
-					fileToSave.FilePath = dlg.SafeFileName;
+					fileToSave.FilePath = dlg.FileName;
+				//MessageBox.Show(dlg.FileName + '\n' + fileToSave.FileName);
+				
 			}
 
-			System.IO.File.WriteAllText(fileToSave.FilePath, fileToSave.TextContent);
+			System.IO.File.WriteAllText(fileToSave.FilePath, fileToSave.Document.Text);
 			ActiveDocument.IsDirty = false;
 		}
 
@@ -370,11 +394,90 @@ namespace Nabi.Templates.ViewModels
 
 		private void OnNew(object parameter)
 		{
-			_files.Add(new FileViewModel(this as IWorkSpaceViewModel));
+			_files.Add(new FileViewModel(this as IWorkSpaceViewModel) { Document = new TextDocument() });
 			ActiveDocument = _files.Last();
+			var appearance = GetService<IAppearanceManager>();
+			if (appearance.ThemeName.Contains("Dark"))
+			{
+				using (System.IO.Stream s = typeof(FileViewModel).Assembly.GetManifestResourceStream("Nabi.Resource.white.xshd"))
+				{
+					if (s == null)
+						throw new InvalidOperationException("Could not find embedded resource");
+					using (System.Xml.XmlReader reader = new System.Xml.XmlTextReader(s))
+					{
+						ActiveDocument.HighlightDef = ICSharpCode.AvalonEdit.Highlighting.Xshd.HighlightingLoader.Load(reader, ICSharpCode.AvalonEdit.Highlighting.HighlightingManager.Instance);
+					}
+				}
+			}			
 		}
 
 		#endregion
-		#endregion methods
-	}
+
+		#region ToggleEditorOptionCommand
+		public ICommand ToggleEditorOptionCommand
+		{
+			get
+			{
+				if (_toggleEditorOptionCommand == null)
+				{
+					_toggleEditorOptionCommand = new RelayCommand<object>((p) => OnToggleEditorOption(p), (p) => CanToggleEditorOption(p));
+				}
+
+				return _toggleEditorOptionCommand;
+			}
+		}
+
+		private bool CanToggleEditorOption(object parameter)
+		{
+			if (this.ActiveDocument != null)
+				return true;
+			return false;
+		}
+
+		private void OnToggleEditorOption(object parameter)
+		{
+			FileViewModel f = this.ActiveDocument;
+
+			if (parameter == null)
+				return;
+			if ((parameter is ToggleEditorOption) == false)
+				return;
+
+			ToggleEditorOption t = (ToggleEditorOption)parameter;
+
+			if (f != null)
+			{
+				switch (t)
+				{
+					case ToggleEditorOption.WordWrap:
+						f.WordWrap = !f.WordWrap;
+						break;
+
+					case ToggleEditorOption.ShowLineNumber:
+						f.ShowLineNumbers = !f.ShowLineNumbers;
+						break;
+
+					case ToggleEditorOption.ShowSpaces:
+						f.TextOptions.ShowSpaces = !f.TextOptions.ShowSpaces;
+						break;
+
+					case ToggleEditorOption.ShowTabs:
+						f.TextOptions.ShowTabs = !f.TextOptions.ShowTabs;
+						break;
+
+					case ToggleEditorOption.ShowEndOfLine:
+						f.TextOptions.ShowEndOfLine = !f.TextOptions.ShowEndOfLine;
+						break;
+
+					default:
+						break;
+
+				
+				}
+			}
+		}
+
+        #endregion
+        #endregion methods
+    }
 }

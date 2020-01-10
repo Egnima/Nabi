@@ -40,6 +40,8 @@ namespace Nabi.Templates.ViewModels.Interfaces
 		/// <param name="saveAsFlag"></param>
 		void Save(FileViewModel fileToSave, bool saveAsFlag = false);
 
+		void Run(FileViewModel fvm);
+
 		/// <summary>
 		/// Open a file and return its content in a viewmodel.
 		/// </summary>

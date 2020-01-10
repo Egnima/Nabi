@@ -44,7 +44,7 @@ namespace Nabi.Templates.ViewModels.Tools
 
 			BitmapImage bi = new BitmapImage();
 			bi.BeginInit();
-			bi.UriSource = new Uri("pack://application:,,/Templates/Images/property-blue.png");
+			bi.UriSource = new Uri("pack://application:,,/Resource/Images/property-blue.png");
 			bi.EndInit();
 			IconSource = bi;
 		}

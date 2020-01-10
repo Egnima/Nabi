@@ -7,24 +7,27 @@ using Nabi.ViewModels.Base;
 using MLib.Interfaces;
 using Settings.Interfaces;
 using Nabi.Templates.ViewModels.AD;
+using Nabi.Templates.ViewModels.Views;
+using System.Windows.Threading;
+using System.Windows.Forms;
 
 namespace Nabi.Templates.ViewModels.Tools
 {
     /// <summary>
     /// Implements the viewmodel that drives a sample tool window view.
     /// </summary>
-    internal class Tool3_ViewModel : ToolViewModel
+    internal class Log_ViewModel : ToolViewModel
     {
         #region fields
         /// <summary>
         /// Identifies the <see ref="ContentId"/> of this tool window.
         /// </summary>
-        public const string ToolContentId = "Tool3_Tool";
+        public const string ToolContentId = "Log";
 
         /// <summary>
         /// Identifies the caption string used for this tool window.
         /// </summary>
-        public const string ToolTitle = "Tool 3";
+        public const string ToolTitle = "로그";
 
         private IWorkSpaceViewModel _workSpaceViewModel = null;
 
@@ -39,7 +42,7 @@ namespace Nabi.Templates.ViewModels.Tools
         /// </summary>
         /// <param name="workSpaceViewModel">Is the link to the application's viewmodel
         /// to enable (event based) communication between this viewmodel and the application.</param>
-        public Tool3_ViewModel(IWorkSpaceViewModel workSpaceViewModel)
+        public Log_ViewModel(IWorkSpaceViewModel workSpaceViewModel)
             : base(ToolTitle)
         {
             _workSpaceViewModel = workSpaceViewModel;
@@ -51,7 +54,7 @@ namespace Nabi.Templates.ViewModels.Tools
         /// <summary>
         /// Hidden default class constructor
         /// </summary>
-        protected Tool3_ViewModel()
+        protected Log_ViewModel()
           : base(ToolTitle)
         {
             SetupADToolDefaults();
@@ -122,6 +125,19 @@ namespace Nabi.Templates.ViewModels.Tools
                                             , appearance.ThemeName
                                             , accentColor);
 
+                        if (appearance.ThemeName.Contains("Dark"))
+                        {
+                            using (System.IO.Stream s = typeof(Log_ViewModel).Assembly.GetManifestResourceStream("Nabi.Resource.white.xshd"))
+                            {
+                                if (s == null)
+                                    throw new InvalidOperationException("Could not find embedded resource");
+                                using (System.Xml.XmlReader reader = new System.Xml.XmlTextReader(s))
+                                {
+                                    Log_View.log.SyntaxHighlighting = ICSharpCode.AvalonEdit.Highlighting.Xshd.HighlightingLoader.Load(reader, ICSharpCode.AvalonEdit.Highlighting.HighlightingManager.Instance);
+                                }
+                            }
+                        }
+
                         // 3 You could also use something like this to change accent color
                         // If you were using your own Theming Framework or MUI, Mahapps etc
                         //
@@ -166,9 +182,11 @@ namespace Nabi.Templates.ViewModels.Tools
 
             BitmapImage bi = new BitmapImage();  // Define an icon for this toolwindow
             bi.BeginInit();
-            bi.UriSource = new Uri("pack://application:,,/Templates/Images/property-blue.png");
+            bi.UriSource = new Uri("pack://application:,,/Resource/Images/property-blue.png");
             bi.EndInit();
             IconSource = bi;
+
+            
         }
 
         /// <summary>
@@ -178,6 +196,12 @@ namespace Nabi.Templates.ViewModels.Tools
         {
             SelectedBackgroundColor = Color.FromArgb(255, 0, 0, 0);
             SelectedAccentColor = Color.FromArgb(128, 0, 180, 0);
+        }
+
+        public void b()
+        {
+            Log_View.log.Text = "Ready to log!";
+            MessageBox.Show(Log_View.log.Text);
         }
         #endregion methods
     }

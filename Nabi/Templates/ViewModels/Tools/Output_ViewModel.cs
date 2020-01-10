@@ -7,24 +7,29 @@ using Nabi.ViewModels.Base;
 using MLib.Interfaces;
 using Settings.Interfaces;
 using Nabi.Templates.ViewModels.AD;
+using ICSharpCode.AvalonEdit.Document;
+using Nabi.Templates.ViewModels.Views;
+using System.Diagnostics;
+using System.Windows.Threading;
+using System.Windows.Forms;
 
 namespace Nabi.Templates.ViewModels.Tools
 {
     /// <summary>
     /// Implements the viewmodel that drives a sample tool window view.
     /// </summary>
-    internal class Tool2_ViewModel : ToolViewModel
+    internal class Output_ViewModel : ToolViewModel
     {
         #region fields
         /// <summary>
         /// Identifies the <see ref="ContentId"/> of this tool window.
         /// </summary>
-        public const string ToolContentId = "Tool2_Tool";
+        public const string ToolContentId = "Output";
 
         /// <summary>
         /// Identifies the caption string used for this tool window.
         /// </summary>
-        public const string ToolTitle = "Tool 2";
+        public const string ToolTitle = "출력";
 
         private IWorkSpaceViewModel _workSpaceViewModel = null;
 
@@ -39,7 +44,7 @@ namespace Nabi.Templates.ViewModels.Tools
         /// </summary>
         /// <param name="workSpaceViewModel">Is the link to the application's viewmodel
         /// to enable (event based) communication between this viewmodel and the application.</param>
-        public Tool2_ViewModel(IWorkSpaceViewModel workSpaceViewModel)
+        public Output_ViewModel(IWorkSpaceViewModel workSpaceViewModel)
             : base(ToolTitle)
         {
             _workSpaceViewModel = workSpaceViewModel;
@@ -51,7 +56,7 @@ namespace Nabi.Templates.ViewModels.Tools
         /// <summary>
         /// Hidden default class constructor
         /// </summary>
-        protected Tool2_ViewModel()
+        protected Output_ViewModel()
           : base(ToolTitle)
         {
             SetupADToolDefaults();
@@ -122,6 +127,19 @@ namespace Nabi.Templates.ViewModels.Tools
                                             , appearance.ThemeName
                                             , accentColor);
 
+                        if (appearance.ThemeName.Contains("Dark"))
+                        {
+                            using (System.IO.Stream s = typeof(Output_ViewModel).Assembly.GetManifestResourceStream("Nabi.Resource.white.xshd"))
+                            {
+                                if (s == null)
+                                    throw new InvalidOperationException("Could not find embedded resource");
+                                using (System.Xml.XmlReader reader = new System.Xml.XmlTextReader(s))
+                                {
+                                    Output_View.output.SyntaxHighlighting = ICSharpCode.AvalonEdit.Highlighting.Xshd.HighlightingLoader.Load(reader, ICSharpCode.AvalonEdit.Highlighting.HighlightingManager.Instance);
+                                }
+                            }
+                        }
+
                         // 3 You could also use something like this to change accent color
                         // If you were using your own Theming Framework or MUI, Mahapps etc
                         //
@@ -166,9 +184,11 @@ namespace Nabi.Templates.ViewModels.Tools
 
             BitmapImage bi = new BitmapImage();  // Define an icon for this toolwindow
             bi.BeginInit();
-            bi.UriSource = new Uri("pack://application:,,/Templates/Images/property-blue.png");
+            bi.UriSource = new Uri("pack://application:,,/Resource/Images/property-blue.png");
             bi.EndInit();
             IconSource = bi;
+
+            
         }
 
         /// <summary>
@@ -179,6 +199,13 @@ namespace Nabi.Templates.ViewModels.Tools
             SelectedBackgroundColor = Color.FromArgb(255, 0, 0, 0);
             SelectedAccentColor = Color.FromArgb(128, 0, 180, 0);
         }
+
+        public void a()
+        {
+            Output_View.output.Text = "Ready to output";
+            MessageBox.Show(Output_View.output.Text);
+        }
+
         #endregion methods
     }
 }

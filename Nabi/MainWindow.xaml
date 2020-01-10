@@ -8,13 +8,15 @@
         xmlns:MWindows="clr-namespace:MWindowLib;assembly=MWindowLib"
         xmlns:templates="clr-namespace:Nabi.Templates"
         xmlns:templateviews="clr-namespace:Nabi.Templates.ViewModels.Views"
+        xmlns:vm="clr-namespace:Nabi.Templates.ViewModels"
         xmlns:advConv="clr-namespace:Xceed.Wpf.AvalonDock.Converters;assembly=Xceed.Wpf.AvalonDock"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="나비" Height="450" Width="800">
     <Grid xmlns:bindLocal="clr-namespace:Nabi.Templates"
           xmlns:ThemeBehav="clr-namespace:MLib.Behaviors;assembly=MLib"
           
           xmlns:avalonDock="clr-namespace:Xceed.Wpf.AvalonDock;assembly=Xceed.Wpf.AvalonDock"
+          xmlns:avalonEdit="clr-namespace:ICSharpCode.AvalonEdit;assembly=ICSharpCode.AvalonEdit"
           xmlns:avalonDockControls="clr-namespace:Xceed.Wpf.AvalonDock.Controls;assembly=Xceed.Wpf.AvalonDock"
           xmlns:avalonDockLayout="clr-namespace:Xceed.Wpf.AvalonDock.Layout;assembly=Xceed.Wpf.AvalonDock"
           xmlns:conv="clr-namespace:Nabi.Templates.Converters"
@@ -25,6 +27,7 @@
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="16"/>
         </Grid.RowDefinitions>
@@ -34,22 +37,22 @@
                 <!-- Use a proxy to bind items to root object of this collection -->
                 <bindLocal:BindingProxy x:Key="MenuItemsProxy" Data="{Binding}" />
             </Menu.Resources>
-            <MenuItem Header="File">
-                <MenuItem Header="New" Command="{Binding AD_WorkSpace.NewCommand}"/>
-                <MenuItem Header="Open" Command="{Binding AD_WorkSpace.OpenCommand}"/>
+            <MenuItem Header="파일">
+                <MenuItem Header="새 파일" Command="{Binding AD_WorkSpace.NewCommand}"/>
+                <MenuItem Header="열기" Command="{Binding AD_WorkSpace.OpenCommand}"/>
                 <Separator/>
-                <MenuItem Header="Save" Command="{Binding AD_WorkSpace.ActiveDocument.SaveCommand}"/>
-                <MenuItem Header="Save As..." Command="{Binding AD_WorkSpace.ActiveDocument.SaveAsCommand}"/>
+                <MenuItem Header="저장" Command="{Binding AD_WorkSpace.ActiveDocument.SaveCommand}"/>
+                <MenuItem Header="다른 이름으로 저장" Command="{Binding AD_WorkSpace.ActiveDocument.SaveAsCommand}"/>
                 <Separator/>
-                <MenuItem Header="Close" Command="{Binding AD_WorkSpace.ActiveDocument.CloseCommand}"/>
+                <MenuItem Header="닫기" Command="{Binding AD_WorkSpace.ActiveDocument.CloseCommand}"/>
             </MenuItem>
-            <MenuItem Header="Layout">
-                <MenuItem Header="Load" Command="{Binding LoadLayoutCommand, ElementName=mainWindow}"/>
-                <MenuItem Header="Save" Command="{Binding SaveLayoutCommand, ElementName=mainWindow}"/>
+            <MenuItem Header="레이아웃">
+                <MenuItem Header="불러오기" Command="{Binding LoadLayoutCommand, ElementName=mainWindow}"/>
+                <MenuItem Header="저장하기" Command="{Binding SaveLayoutCommand, ElementName=mainWindow}"/>
                 <MenuItem Header="Dump to Console" Click="OnDumpToConsole"/>
             </MenuItem>
-            <MenuItem Header="Tools">
-                <MenuItem Header="Themes"
+            <MenuItem Header="도구">
+                <MenuItem Header="테마"
                                   ItemsSource="{Binding AppTheme.ListOfThemes}"
                                   IsEnabled="{Binding AppTheme.IsEnabled, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                   DisplayMemberPath="Model.DisplayName"
@@ -68,113 +71,177 @@
                 </MenuItem>
                 <MenuItem Header="File Stats" IsChecked="{Binding AD_WorkSpace.FileStats.IsVisible, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsCheckable="True"/>
                 <MenuItem Header="Color Picker" IsChecked="{Binding AD_WorkSpace.ColorPicker.IsVisible, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsCheckable="True"/>
-                <MenuItem Header="Tool1" IsChecked="{Binding AD_WorkSpace.Tool1.IsVisible, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsCheckable="True"/>
-                <MenuItem Header="Tool2" IsChecked="{Binding AD_WorkSpace.Tool2.IsVisible, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsCheckable="True"/>
-                <MenuItem Header="Tool3" IsChecked="{Binding AD_WorkSpace.Tool3.IsVisible, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsCheckable="True"/>
+                <MenuItem Header="출력 창" IsChecked="{Binding AD_WorkSpace.Output.IsVisible, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsCheckable="True"/>
+                <MenuItem Header="로그 창" IsChecked="{Binding AD_WorkSpace.Log.IsVisible, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsCheckable="True"/>
             </MenuItem>
         </Menu>
 
-        <TabControl Grid.Row="1">
-            <TabItem Name="tab1" Header="tab 1">
-                <avalonDock:DockingManager x:Name="dockManager"
+        <ToolBarTray Grid.Row="1" SnapsToDevicePixels="True" >
+            <ToolBar VerticalAlignment="Stretch" ToolBarTray.IsLocked="True" 
+                     SnapsToDevicePixels="True">
+                <Button Command="{Binding AD_WorkSpace.NewCommand}" SnapsToDevicePixels="True"
+                        ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Command.Text}">
+                    <Image Source="/Nabi;component/Resource/Images/App/icons8-new-file-500.png" Height="20" RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True"/>
+                </Button>
+                <Button Command="{Binding AD_WorkSpace.OpenCommand}" SnapsToDevicePixels="True"
+                        ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Command.Text}">
+                    <Image Source="/Nabi;component/Resource/Images/App/icons8-opened-folder-500.png" Height="20" RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True"/>
+                </Button>
+                <Button Command="{Binding AD_WorkSpace.ActiveDocument.SaveCommand}" SnapsToDevicePixels="True"
+                        ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Command.Text}">
+                    <Image Source="/Nabi;component/Resource/Images/App/icons8-save-500.png" Height="20" RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True"/>
+                </Button>
+                <Button Command="{Binding AD_WorkSpace.ActiveDocument.SaveAsCommand}" SnapsToDevicePixels="True"
+                        ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Command.Text}">
+                    <Image Source="/Nabi;component/Resource/Images/App/icons8-save-as-500.png" Height="20" RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True"/>
+                </Button>
+                <Separator Margin="3"/>
+                <Button Command="Undo" SnapsToDevicePixels="True"
+                        ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Command.Text}">
+                    <Image Source="/Nabi;component/Resource/Images/App/icons8-undo-500.png" RenderOptions.BitmapScalingMode="HighQuality" Height="20" SnapsToDevicePixels="True"/>
+                </Button>
+                <Button Command="Redo" SnapsToDevicePixels="True"
+                        ToolTip="{Binding RelativeSource={RelativeSource Self}, Path=Command.Text}">
+                    <Image Source="/Nabi;component/Resource/Images/App/icons8-redo-500.png" RenderOptions.BitmapScalingMode="HighQuality" Height="20" SnapsToDevicePixels="True"/>
+                </Button>
+                <Separator Margin="3"/>
+                <ToggleButton IsChecked="{Binding AD_WorkSpace.ActiveDocument.WordWrap, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                Command="{Binding AD_WorkSpace.ToggleEditorOptionCommand}"
+                                CommandParameter="{x:Static vm:ToggleEditorOption.WordWrap}"
+                                ToolTip="Click this button to switch word wrap on or off">
+                    <Image Source="/Nabi;component/Resource/Images/App/icons8-word-wrap-500.png" RenderOptions.BitmapScalingMode="HighQuality" Height="20" SnapsToDevicePixels="True" />
+                </ToggleButton>
+                <ToggleButton IsChecked="{Binding AD_WorkSpace.ActiveDocument.ShowLineNumbers, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                Command="{Binding AD_WorkSpace.ToggleEditorOptionCommand}"
+                                CommandParameter="{x:Static vm:ToggleEditorOption.ShowLineNumber}"
+                                ToolTip="Click this button to switch display of line numbers on or off">
+                    <Image Source="/Nabi;component/Resource/Images/App/icons8-numbered-list-500.png" RenderOptions.BitmapScalingMode="HighQuality" Height="20" SnapsToDevicePixels="True"/>
+                </ToggleButton>
+
+                <ToggleButton IsChecked="{Binding AD_WorkSpace.ActiveDocument.TextOptions.ShowEndOfLine, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                Command="{Binding AD_WorkSpace.ToggleEditorOptionCommand}"
+                                CommandParameter="{x:Static vm:ToggleEditorOption.ShowEndOfLine}"
+                                ToolTip="Highlighted end of line in text (toggle on/off)">
+                    <Image Source="/Nabi;component/Resource/Images/App/icons8-enter-key-500.png" RenderOptions.BitmapScalingMode="HighQuality" Height="20" SnapsToDevicePixels="True"/>
+                </ToggleButton>
+                <ToggleButton IsChecked="{Binding AD_WorkSpace.ActiveDocument.TextOptions.ShowSpaces, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                Command="{Binding AD_WorkSpace.ToggleEditorOptionCommand}"
+                                CommandParameter="{x:Static vm:ToggleEditorOption.ShowSpaces}"
+                                ToolTip="Highlight spaces characters in text (toggle on/off)">
+                    <Image Source="/Nabi;component/Resource/Images/App/space-bar-1439880.png" RenderOptions.BitmapScalingMode="HighQuality" Height="20" SnapsToDevicePixels="True"/>
+                </ToggleButton>
+                <ToggleButton IsChecked="{Binding AD_WorkSpace.ActiveDocument.TextOptions.ShowTabs, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                Command="{Binding AD_WorkSpace.ToggleEditorOptionCommand}"
+                                CommandParameter="{x:Static vm:ToggleEditorOption.ShowTabs}"
+                                ToolTip="Highlight tab characters in text (toggle on/off)">
+                    <Image Source="/Nabi;component/Resource/Images/App/keyboard-key-tab-arrow-right.png" RenderOptions.BitmapScalingMode="HighQuality" Height="20" SnapsToDevicePixels="True"/>
+                </ToggleButton>
+                <Separator Margin="3"/>
+                <Button Command="{Binding AD_WorkSpace.ActiveDocument.RunCommand}" SnapsToDevicePixels="True">
+                    <Image Source="/Nabi;component/Resource/Images/App/icons8-play-500.png" RenderOptions.BitmapScalingMode="HighQuality" Height="20" SnapsToDevicePixels="True"/>
+                </Button>
+            </ToolBar>
+        </ToolBarTray>
+
+        <avalonDock:DockingManager x:Name="dockManager"
                                    DataContext="{Binding AD_WorkSpace}"
                                    AnchorablesSource="{Binding Tools}" 
                                    DocumentsSource="{Binding Files}"
                                    ActiveContent="{Binding ActiveDocument, Mode=TwoWay, Converter={StaticResource ActiveDocumentConverter}}"
-                                   Grid.Row="1"
+                                   Grid.Row="2"
                                    Visibility="Hidden"
                                    >
-                    <!-- avalonDock:DockingManager.Theme>
+            <!-- avalonDock:DockingManager.Theme>
                 <avalonDock:Vs2013LightTheme/>
             </avalonDock:DockingManager.Theme -->
-                    <avalonDock:DockingManager.LayoutItemTemplateSelector>
-                        <templates:PanesTemplateSelector>
-                            <templates:PanesTemplateSelector.FileViewTemplate>
-                                <DataTemplate>
-                                    <Grid>
-                                        <TextBox
-                                    Text="{Binding TextContent, UpdateSourceTrigger=PropertyChanged}"
-                                    TextWrapping="Wrap"
-                                    AcceptsReturn="True"
-                                    BorderThickness="0" />
-                                    </Grid>
-                                </DataTemplate>
-                            </templates:PanesTemplateSelector.FileViewTemplate>
-                            <templates:PanesTemplateSelector.FileStatsViewTemplate>
-                                <DataTemplate>
-                                    <Border Padding="6">
-                                        <StackPanel Orientation="Vertical">
-                                            <TextBlock Text="{Binding FileSize}"/>
-                                            <TextBlock Text="{Binding LastModified}"/>
-                                            <TextBox Text="test"/>
-                                        </StackPanel>
-                                    </Border>
-                                </DataTemplate>
-                            </templates:PanesTemplateSelector.FileStatsViewTemplate>
-                            <templates:PanesTemplateSelector.ColorPickerViewTemplate>
-                                <DataTemplate>
-                                    <Border Padding="6">
-                                        <ScrollViewer>
-                                            <templateviews:ColorSelectionView />
-                                        </ScrollViewer>
-                                    </Border>
-                                </DataTemplate>
-                            </templates:PanesTemplateSelector.ColorPickerViewTemplate>
-                            <templates:PanesTemplateSelector.Tooln_ViewTemplate>
-                                <DataTemplate>
-                                    <Border Padding="6">
-                                        <StackPanel Orientation="Vertical">
-                                            <TextBlock Text="I am a ToolWindow test implementation"/>
-                                        </StackPanel>
-                                    </Border>
-                                </DataTemplate>
-                            </templates:PanesTemplateSelector.Tooln_ViewTemplate>
-                        </templates:PanesTemplateSelector>
-                    </avalonDock:DockingManager.LayoutItemTemplateSelector>
+            <avalonDock:DockingManager.LayoutItemTemplateSelector>
+                <templates:PanesTemplateSelector>
+                    <templates:PanesTemplateSelector.FileViewTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <avalonEdit:TextEditor 
+                                    Document="{Binding Document, UpdateSourceTrigger=PropertyChanged}"
+                                    Background="{Binding Path=BackgroundColor}"
+                                    SyntaxHighlighting="{Binding HighlightDef}"
+                                    IsReadOnly="{Binding IsReadOnly}"
+									IsModified="{Binding Path=IsDirty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    WordWrap="{Binding Path=WordWrap, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    ShowLineNumbers="{Binding Path=ShowLineNumbers, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Options="{Binding TextOptions}" />
+                            </Grid>
+                        </DataTemplate>
+                    </templates:PanesTemplateSelector.FileViewTemplate>
+                    <templates:PanesTemplateSelector.FileStatsViewTemplate>
+                        <DataTemplate>
+                            <Border Padding="6">
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Text="{Binding FileSize}"/>
+                                    <TextBlock Text="{Binding LastModified}"/>
+                                    <TextBox Text="test"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </templates:PanesTemplateSelector.FileStatsViewTemplate>
+                    <templates:PanesTemplateSelector.ColorPickerViewTemplate>
+                        <DataTemplate>
+                            <Border Padding="6">
+                                <ScrollViewer>
+                                    <templateviews:ColorSelectionView />
+                                </ScrollViewer>
+                            </Border>
+                        </DataTemplate>
+                    </templates:PanesTemplateSelector.ColorPickerViewTemplate>
+                    <templates:PanesTemplateSelector.Output_ViewTemplate>
+                        <DataTemplate>
+                            <templateviews:Output_View/>
+                        </DataTemplate>
+                    </templates:PanesTemplateSelector.Output_ViewTemplate>
+                    <templates:PanesTemplateSelector.Log_ViewTemplate>
+                        <DataTemplate>
+                            <templateviews:Log_View/>
+                        </DataTemplate>
+                    </templates:PanesTemplateSelector.Log_ViewTemplate>
+                </templates:PanesTemplateSelector>
+            </avalonDock:DockingManager.LayoutItemTemplateSelector>
 
-                    <avalonDock:DockingManager.LayoutItemContainerStyleSelector>
-                        <templates:PanesStyleSelector>
-                            <templates:PanesStyleSelector.ToolStyle>
-                                <!-- Define Style of a Tool Window View -->
-                                <Style TargetType="{x:Type avalonDockControls:LayoutAnchorableItem}">
-                                    <Setter Property="Title" Value="{Binding Model.Title}"/>
-                                    <Setter Property="IconSource" Value="{Binding Model.IconSource}"/>
-                                    <Setter Property="Visibility" Value="{Binding Model.IsVisible, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter={x:Static Visibility.Hidden}}"/>
-                                    <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
-                                    <Setter Property="IsSelected" Value="{Binding Model.IsSelected, Mode=TwoWay}"/>
-                                    <Setter Property="IsActive" Value="{Binding Model.IsActive, Mode=TwoWay}"/>
-                                    <Setter Property="CanHide" Value="True" />
-                                </Style>
-                            </templates:PanesStyleSelector.ToolStyle>
-                            <templates:PanesStyleSelector.FileStyle>
-                                <!-- Define Style of a Document View -->
-                                <Style TargetType="{x:Type avalonDockControls:LayoutItem}">
-                                    <Setter Property="Title" Value="{Binding Model.Title}"/>
-                                    <Setter Property="ToolTip" Value="{Binding Model.FilePath}"/>
-                                    <Setter Property="CloseCommand" Value="{Binding Model.CloseCommand}"/>
-                                    <Setter Property="IconSource" Value="{Binding Model.IconSource}"/>
-                                    <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
-                                </Style>
-                            </templates:PanesStyleSelector.FileStyle>
-                        </templates:PanesStyleSelector>
-                    </avalonDock:DockingManager.LayoutItemContainerStyleSelector>
-                    <avalonDock:DockingManager.LayoutUpdateStrategy>
-                        <templates:LayoutInitializer/>
-                    </avalonDock:DockingManager.LayoutUpdateStrategy>
+            <avalonDock:DockingManager.LayoutItemContainerStyleSelector>
+                <templates:PanesStyleSelector>
+                    <templates:PanesStyleSelector.ToolStyle>
+                        <!-- Define Style of a Tool Window View -->
+                        <Style TargetType="{x:Type avalonDockControls:LayoutAnchorableItem}">
+                            <Setter Property="Title" Value="{Binding Model.Title}"/>
+                            <Setter Property="IconSource" Value="{Binding Model.IconSource}"/>
+                            <Setter Property="Visibility" Value="{Binding Model.IsVisible, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter={x:Static Visibility.Hidden}}"/>
+                            <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
+                            <Setter Property="IsSelected" Value="{Binding Model.IsSelected, Mode=TwoWay}"/>
+                            <Setter Property="IsActive" Value="{Binding Model.IsActive, Mode=TwoWay}"/>
+                            <Setter Property="CanHide" Value="True" />
+                        </Style>
+                    </templates:PanesStyleSelector.ToolStyle>
+                    <templates:PanesStyleSelector.FileStyle>
+                        <!-- Define Style of a Document View -->
+                        <Style TargetType="{x:Type avalonDockControls:LayoutItem}">
+                            <Setter Property="Title" Value="{Binding Model.Title}"/>
+                            <Setter Property="ToolTip" Value="{Binding Model.FilePath}"/>
+                            <Setter Property="CloseCommand" Value="{Binding Model.CloseCommand}"/>
+                            <Setter Property="IconSource" Value="{Binding Model.IconSource}"/>
+                            <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
+                        </Style>
+                    </templates:PanesStyleSelector.FileStyle>
+                </templates:PanesStyleSelector>
+            </avalonDock:DockingManager.LayoutItemContainerStyleSelector>
+            <avalonDock:DockingManager.LayoutUpdateStrategy>
+                <templates:LayoutInitializer/>
+            </avalonDock:DockingManager.LayoutUpdateStrategy>
 
-                    <avalonDockLayout:LayoutRoot>
-                        <avalonDockLayout:LayoutPanel Orientation="Vertical">
-                            <avalonDockLayout:LayoutDocumentPane/>
-                            <!-- Use DockMinWidth="250" to limit the size of a LayoutAnchorable -->
-                            <avalonDockLayout:LayoutAnchorablePane Name="ToolsPane" DockMinWidth="250" DockHeight="150">
-                            </avalonDockLayout:LayoutAnchorablePane>
-                        </avalonDockLayout:LayoutPanel>
-                    </avalonDockLayout:LayoutRoot>
-                </avalonDock:DockingManager>
-            </TabItem>
-            <TabItem Name="tab2" Header="tab 2">
-                <TextBlock Text="tab2 is just for testing load/unload control in tab1"></TextBlock>
-            </TabItem>
-        </TabControl>
+            <avalonDockLayout:LayoutRoot>
+                <avalonDockLayout:LayoutPanel Orientation="Vertical">
+                    <avalonDockLayout:LayoutDocumentPane/>
+                    <!-- Use DockMinWidth="250" to limit the size of a LayoutAnchorable -->
+                    <avalonDockLayout:LayoutAnchorablePane Name="ToolsPane" DockMinWidth="250" DockHeight="150">
+                    </avalonDockLayout:LayoutAnchorablePane>
+                </avalonDockLayout:LayoutPanel>
+            </avalonDockLayout:LayoutRoot>
+        </avalonDock:DockingManager>
     </Grid>
 </MWindows:MetroWindow>

@@ -41,6 +41,9 @@
     <Reference Include="ColorPickerLib, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dirkster.ColorPickerLib.1.6.0\lib\net40\ColorPickerLib.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.AvalonEdit, Version=6.0.0.0, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
+      <HintPath>..\packages\AvalonEdit.6.0.0\lib\net45\ICSharpCode.AvalonEdit.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Dirkster.MWindowLib.1.2.1\lib\net452\Microsoft.Expression.Interactions.dll</HintPath>
     </Reference>
@@ -61,6 +64,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Dirkster.MWindowLib.1.2.1\lib\net452\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -105,6 +109,8 @@
     <Compile Include="Models\LayoutLoader.cs" />
     <Compile Include="Models\LayoutLoaderResult.cs" />
     <Compile Include="Models\SettingDefaults.cs" />
+    <Compile Include="PythonManager\Compiler.cs" />
+    <Compile Include="PythonManager\Grammer.cs" />
     <Compile Include="Templates\BindingProxy.cs" />
     <Compile Include="Templates\Converters\ActiveDocumentConverter.cs" />
     <Compile Include="Templates\Converters\BoolToVisibilityConverter.cs" />
@@ -117,11 +123,16 @@
     <Compile Include="Templates\ViewModels\Interfaces\IWorkSpaceViewModel.cs" />
     <Compile Include="Templates\ViewModels\Tools\ColorPickerViewModel.cs" />
     <Compile Include="Templates\ViewModels\Tools\FileStatsViewModel.cs" />
-    <Compile Include="Templates\ViewModels\Tools\Tool1_ViewModel.cs" />
-    <Compile Include="Templates\ViewModels\Tools\Tool2_ViewModel.cs" />
-    <Compile Include="Templates\ViewModels\Tools\Tool3_ViewModel.cs" />
+    <Compile Include="Templates\ViewModels\Tools\Output_ViewModel.cs" />
+    <Compile Include="Templates\ViewModels\Tools\Log_ViewModel.cs" />
     <Compile Include="Templates\ViewModels\Views\ColorSelectionView.xaml.cs">
       <DependentUpon>ColorSelectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Templates\ViewModels\Views\Log_View.xaml.cs">
+      <DependentUpon>Log_View.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Templates\ViewModels\Views\Output_View.xaml.cs">
+      <DependentUpon>Output_View.xaml</DependentUpon>
     </Compile>
     <Compile Include="Templates\ViewModels\WorkSpaceViewModel.cs" />
     <Compile Include="ViewModels\AppLifeCycleViewModel.cs" />
@@ -163,6 +174,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Templates\ViewModels\Views\Log_View.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Templates\ViewModels\Views\Output_View.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -181,12 +200,15 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <EmbeddedResource Include="Resource\Python.xshd" />
+    <EmbeddedResource Include="Resource\white.xshd" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -206,11 +228,33 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Templates\Images\document.png" />
-    <Resource Include="Templates\Images\property-blue.png" />
+    <Resource Include="Resource\Images\document.png" />
+    <Resource Include="Resource\Images\property-blue.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ServiceInjector.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resource\Images\App\icons8-command-line-500.png" />
+    <Resource Include="Resource\Images\App\icons8-enter-key-500.png" />
+    <Resource Include="Resource\Images\App\icons8-file-explorer-500.png" />
+    <Resource Include="Resource\Images\App\icons8-new-file-500.png" />
+    <Resource Include="Resource\Images\App\icons8-numbered-list-500.png" />
+    <Resource Include="Resource\Images\App\icons8-opened-folder-500.png" />
+    <Resource Include="Resource\Images\App\icons8-play-500.png" />
+    <Resource Include="Resource\Images\App\icons8-powershell-500.png" />
+    <Resource Include="Resource\Images\App\icons8-redo-500.png" />
+    <Resource Include="Resource\Images\App\icons8-run-command-500.png" />
+    <Resource Include="Resource\Images\App\icons8-save-500.png" />
+    <Resource Include="Resource\Images\App\icons8-save-all-500.png" />
+    <Resource Include="Resource\Images\App\icons8-save-as-500.png" />
+    <Resource Include="Resource\Images\App\icons8-undo-500.png" />
+    <Resource Include="Resource\Images\App\icons8-word-wrap-500.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resource\Images\App\keyboard-key-tab-arrow-right.png" />
+    <Resource Include="Resource\Images\App\space-bar-1439880.png" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
