@@ -1,0 +1,52 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v3.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v3.0": {
+      "MWindowLib/1.3.0.1": {
+        "dependencies": {
+          "MWindowInterfacesLib": "1.3.0.1",
+          "Nuctech.Xaml.Behaviors.Wpf": "1.0.2"
+        },
+        "runtime": {
+          "MWindowLib.dll": {}
+        }
+      },
+      "Nuctech.Xaml.Behaviors.Wpf/1.0.2": {
+        "runtime": {
+          "lib/net45/Microsoft.Xaml.Behaviors.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.69.43439"
+          }
+        }
+      },
+      "MWindowInterfacesLib/1.3.0.1": {
+        "runtime": {
+          "MWindowInterfacesLib.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "MWindowLib/1.3.0.1": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Nuctech.Xaml.Behaviors.Wpf/1.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-fV7iluaOSAd140jjLLnIymuRaZINUKnWKMHNwnIsDkzhl6QNNv7vGXQtyBJOEQ5ZXVuCgqIu4XcAOECuTl36oA==",
+      "path": "nuctech.xaml.behaviors.wpf/1.0.2",
+      "hashPath": "nuctech.xaml.behaviors.wpf.1.0.2.nupkg.sha512"
+    },
+    "MWindowInterfacesLib/1.3.0.1": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
