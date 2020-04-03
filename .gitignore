@@ -338,3 +338,6 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+.vs/Nabi/v16/.suo
+.vs/Nabi/v16/Server/sqlite3/db.lock
+.vs/Nabi/v16/Server/sqlite3/storage.ide
