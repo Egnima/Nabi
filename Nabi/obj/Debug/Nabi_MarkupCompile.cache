@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 C:\Users\추헌오\source\repos\Egnima\Nabi\Nabi\App.xaml
-11151548125
+8-724456903
 
-5-2017746502
-31-777137675
-MainWindow.xaml;
+38-1731655939
+32-1462431596
+BindToMLib\AvalonDock_Dark_LightBrushs.xaml;BindToMLib\ColorPickerLib_DarkLightBrushs.xaml;BindToMLib\MWindowLib_DarkLightBrushs.xaml;BindToMLib\NumericUpDownLib_DarkLightBrushs.xaml;MainWindow.xaml;Templates\ViewModels\Views\ColorSelectionView.xaml;Templates\ViewModels\Views\Log_View.xaml;Templates\ViewModels\Views\Output_View.xaml;
 
 True
 
